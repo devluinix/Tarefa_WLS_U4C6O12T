@@ -44,11 +44,11 @@ int main()
   {
     cor = !cor;
     // Atualiza o conteúdo do display com animações
-    ssd1306_fill(&ssd, !cor);                           // Limpa o display
-    ssd1306_rect(&ssd, 3, 3, 122, 58, cor, !cor);       // Desenha um retângulo
-    ssd1306_draw_string(&ssd, "Luinix  TIC37", 8, 10); // Desenha uma string
-    ssd1306_draw_string(&ssd, "EMBARCATECH", 20, 30);   // Desenha uma string
-    ssd1306_draw_string(&ssd, "PROF WILTON", 15, 48);   // Desenha uma string
+    ssd1306_fill(&ssd, false);                           // Limpa o display
+    ssd1306_rect(&ssd, 22, 3, 122, 2, true, false);     // Linha
+    ssd1306_draw_string(&ssd, "Atvd. U4C6O12T", 8, 10); // Desenha uma string
+    ssd1306_draw_string(&ssd, "Led:  G:1, B:1", 8, 30);   // Desenha uma string
+    ssd1306_draw_string(&ssd, "Aluno Luinix", 15, 48);  // Desenha uma string
     ssd1306_send_data(&ssd);                            // Atualiza o display
 
     sleep_ms(1000);
