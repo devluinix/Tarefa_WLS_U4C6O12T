@@ -56,6 +56,8 @@ target_include_directories(U4C6O12T PRIVATE
 # Add any user requested libraries
 target_link_libraries(U4C6O12T 
         hardware_i2c
+        hardware_clocks
+        hardware_uart
         )
 
 pico_add_extra_outputs(U4C6O12T)
