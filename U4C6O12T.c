@@ -31,7 +31,7 @@ void button_irq_handler(uint gpio, uint32_t events)
   {
     return;
   }
-  next_update = delayed_by_us(now, 500000);
+  next_update = delayed_by_us(now, 200000);
   printf("Botão pressionado no pino %d\n", gpio);
   if (gpio == BUTTON_A)
   {
