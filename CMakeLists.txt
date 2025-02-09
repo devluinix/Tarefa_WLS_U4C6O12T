@@ -35,7 +35,10 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(U4C6O12T U4C6O12T.c inc/ssd1306.c)
+add_executable(U4C6O12T U4C6O12T.c inc/ssd1306.c matriz_leds.c)
+
+# Generate PIO header
+pico_generate_pio_header(${CMAKE_PROJECT_NAME} ${CMAKE_CURRENT_LIST_DIR}/pio_matrix.pio)
 
 pico_set_program_name(U4C6O12T "U4C6O12T")
 pico_set_program_version(U4C6O12T "0.1")
@@ -55,6 +58,7 @@ target_include_directories(U4C6O12T PRIVATE
 
 # Add any user requested libraries
 target_link_libraries(U4C6O12T 
+        hardware_pio
         hardware_i2c
         hardware_clocks
         hardware_uart

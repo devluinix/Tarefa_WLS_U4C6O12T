@@ -41,6 +41,7 @@
     "font.h": "c",
     "cstdint": "c",
     "compare": "cpp",
-    "uart.h": "c"
+    "uart.h": "c",
+    "matriz_leds.h": "c"
   }
 }

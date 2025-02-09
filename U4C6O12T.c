@@ -3,35 +3,155 @@
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "hardware/uart.h"
+#include "hardware/pio.h"
+#include "matriz_leds.h"
 #include "inc/ssd1306.h"
 #include "pico/time.h"
 #include "inc/font.h"
+
 #define I2C_PORT i2c1
 #define I2C_SDA 14
 #define I2C_SCL 15
+#define endereco 0x3C
+
 #define BUTTON_A 5
+#define BUTTON_B 6
+#define DEBOUNCE_TIME 200
+bool mudarMatriz = false;             // Flag para atualizar matriz no main
+uint32_t tempo_botao_pressionado = 0; // Tempo de pressionamento do botão em ms
+
 #define LED_BLUE 11
 #define LED_GREEN 12
 
-#define BUTTON_B 6
-#define endereco 0x3C
-
 bool updateDisplay = true;
-absolute_time_t next_update = 0;
 
 bool ledBlue = false;
 bool ledGreen = false;
 
 char charDigitado = 'A';
 
+void actionMatriz(int key, PIO pio, uint sm)
+{
+  const RGB_cod red = {20, 0, 0};
+  const RGB_cod blk = {0, 0, 0};
+  if (key == ' ')
+  {
+    Matriz_leds_config frame = {
+        {blk, blk, blk, blk, blk},
+        {blk, blk, blk, blk, blk},
+        {blk, blk, blk, blk, blk},
+        {blk, blk, blk, blk, blk},
+        {blk, blk, blk, blk, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '1')
+  {
+    Matriz_leds_config frame = {
+        {blk, blk, red, blk, blk},
+        {blk, red, red, blk, blk},
+        {blk, blk, red, blk, blk},
+        {blk, blk, red, blk, blk},
+        {blk, red, red, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '2')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, red, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, red, red, blk, blk},
+        {blk, red, blk, blk, blk},
+        {blk, red, red, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '3')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, red, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, blk, red, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, red, red, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '4')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, blk, red, blk},
+        {blk, red, blk, red, blk},
+        {blk, red, red, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, blk, blk, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '5')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, red, red, blk},
+        {blk, red, blk, blk, blk},
+        {blk, red, red, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, red, red, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '6')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, red, red, blk},
+        {blk, red, blk, blk, blk},
+        {blk, red, red, red, blk},
+        {blk, red, blk, red, blk},
+        {blk, red, red, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '7')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, red, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, blk, blk, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '8')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, red, red, blk},
+        {blk, red, blk, red, blk},
+        {blk, red, red, red, blk},
+        {blk, red, blk, red, blk},
+        {blk, red, red, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '9')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, red, red, blk},
+        {blk, red, blk, red, blk},
+        {blk, red, red, red, blk},
+        {blk, blk, blk, red, blk},
+        {blk, blk, blk, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+  else if (key == '0')
+  {
+    Matriz_leds_config frame = {
+        {blk, red, red, red, blk},
+        {blk, red, blk, red, blk},
+        {blk, red, blk, red, blk},
+        {blk, red, blk, red, blk},
+        {blk, red, red, red, blk}};
+    imprimir_desenho(frame, pio, sm);
+  }
+}
+
 void button_irq_handler(uint gpio, uint32_t events)
 {
-  absolute_time_t now = get_absolute_time();
-  if (absolute_time_diff_us(next_update, now) < 0)
-  {
+  uint32_t current_time = to_ms_since_boot(get_absolute_time());
+  if (current_time - tempo_botao_pressionado < DEBOUNCE_TIME)
     return;
-  }
-  next_update = delayed_by_us(now, 200000);
+
   printf("Botão pressionado no pino %d\n", gpio);
   if (gpio == BUTTON_A)
   {
@@ -85,13 +205,24 @@ int main()
   gpio_put(LED_BLUE, 0);
   gpio_put(LED_GREEN, 0);
 
-  //============== INICIALIZAÇÃO UART
+  //============== INICIALIZAÇÃO MATRIZ
+  PIO pio = pio0;
+  uint sm = configurar_matriz(pio);
+  actionMatriz(' ', pio, sm);
 
   printf("Bem vindo a Atividade U4C6O12T!\n");
   while (true)
   {
     if (updateDisplay || scanf(" %c", &charDigitado))
     {
+      if (charDigitado >= '0' && charDigitado <= '9')
+      {
+        actionMatriz(charDigitado, pio, sm);
+      }
+      else
+      {
+        actionMatriz(' ', pio, sm);
+      }
       printf("Atualizando display\n");
       updateDisplay = false;
       ssd1306_fill(&ssd, false); // Limpa o display
