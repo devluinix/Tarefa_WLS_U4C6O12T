@@ -42,6 +42,7 @@
     "cstdint": "c",
     "compare": "cpp",
     "uart.h": "c",
-    "matriz_leds.h": "c"
+    "matriz_leds.h": "c",
+    "pio_matrix.pio.h": "c"
   }
 }
